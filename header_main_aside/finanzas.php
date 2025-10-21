@@ -111,7 +111,7 @@
                     <a class="area__boton"href="finanzas.php?pestaña=alta_pedido&header_loc=<?php echo $header_loc; ?>">Alta de pedido</a>
                 </section>
                 <section class="area">
-                    <a class="area__boton"href="finanzas.php?pestaña=altadeproveedor&header_loc=<?php echo $header_loc; ?>">Alta de proveedor</a>
+                    <a class="area__boton"href="finanzas.php?pestaña=proveedores&header_loc=<?php echo $header_loc; ?>">Alta de proveedor</a>
                 </section>
             </nav>
         </aside>

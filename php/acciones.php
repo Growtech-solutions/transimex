@@ -416,3 +416,22 @@ if (isset($_POST['guardar_personal'])) {
 }
     header("Location: " . $_SERVER['HTTP_REFERER'] );
     }
+    if (isset($_POST['accion']) && $_POST['accion'] == 'editar_proveedor') {
+    // Editar proveedor
+    $id = $_POST['id'];
+    $proveedor = $_POST['proveedor'];
+    $direccion = $_POST['direccion'];
+    $telefono = $_POST['telefono'];
+    $correo = $_POST['correo'];
+    $periodo_pago = $_POST['periodo_pago'];
+    
+    $update = "UPDATE proveedor SET proveedor='$proveedor', direccion='$direccion', telefono='$telefono', correo='$correo', periodo_pago='$periodo_pago' WHERE id=$id";
+    mysqli_query($conexion, $update);
+    header("Location: " . $_SERVER['HTTP_REFERER'] );
+  } else if (isset($_POST['accion']) && $_POST['accion'] == 'eliminar_proveedor')  {
+    // Eliminar proveedor
+    $id = $_POST['id'];
+    $delete = "DELETE FROM proveedor WHERE id = $id";
+    mysqli_query($conexion, $delete);
+    header("Location: " . $_SERVER['HTTP_REFERER'] );
+  }
