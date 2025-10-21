@@ -206,7 +206,8 @@ if ($stmt) {
     if ($stmt->num_rows > 0) {
         echo "<table border='1'>
             <tr>
-                <th>Fecha Solicitud</th>
+                <th>ID</th>
+                <th>Solicitud</th>
                 <th>Numero OC</th>
                 <th>Proveedor</th>
                 <th>OT</th>
@@ -221,8 +222,14 @@ if ($stmt) {
             </tr>";
 
         while ($stmt->fetch()) {
-            echo "<tr>
-                    <td>" . htmlspecialchars($fecha_solicitud ?? '', ENT_QUOTES, 'UTF-8') . "</td>
+            echo "<tr>";
+            if ($userRole=='gerencia') {
+                echo "<td style='color: blue; text-decoration: underline; cursor:pointer;' onclick=\"window.location.href='$header_loc.php?pestaña=editar_compras&id=$id&header_loc=$header_loc'\">" . htmlspecialchars($id ?? '', ENT_QUOTES, 'UTF-8') . "</td>";
+            } else {
+                echo "<td>" . htmlspecialchars($id ?? '', ENT_QUOTES, 'UTF-8') . "</td>";
+            }
+            
+            echo "    <td>" . htmlspecialchars($fecha_solicitud ?? '', ENT_QUOTES, 'UTF-8') . "</td>
                     <td>" . htmlspecialchars($numero_oc ?? '', ENT_QUOTES, 'UTF-8') . "</td>
                     <td>" . htmlspecialchars($proveedor ?? '', ENT_QUOTES, 'UTF-8') . "</td>
                     <td>" . htmlspecialchars($ot ?? '', ENT_QUOTES, 'UTF-8') . "</td>
