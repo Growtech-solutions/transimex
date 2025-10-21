@@ -423,9 +423,7 @@ if (isset($_POST['guardar_personal'])) {
     $direccion = $_POST['direccion'];
     $telefono = $_POST['telefono'];
     $correo = $_POST['correo'];
-    $periodo_pago = $_POST['periodo_pago'];
-    
-    $update = "UPDATE proveedor SET proveedor='$proveedor', direccion='$direccion', telefono='$telefono', correo='$correo', periodo_pago='$periodo_pago' WHERE id=$id";
+    $update = "UPDATE proveedor SET proveedor='$proveedor', direccion='$direccion', telefono='$telefono', correo='$correo' WHERE id=$id";
     mysqli_query($conexion, $update);
     header("Location: " . $_SERVER['HTTP_REFERER'] );
   } else if (isset($_POST['accion']) && $_POST['accion'] == 'eliminar_proveedor')  {

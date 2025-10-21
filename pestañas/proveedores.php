@@ -120,7 +120,6 @@ $result = mysqli_query($conexion, $query);
           <th>Dirección</th>
           <th>Teléfono</th>
           <th>Correo</th>
-          <th>Periodo Pago</th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -131,9 +130,8 @@ $result = mysqli_query($conexion, $query);
             <td><?= htmlspecialchars($row['direccion']) ?></td>
             <td><?= htmlspecialchars($row['telefono']) ?></td>
             <td><?= htmlspecialchars($row['correo']) ?></td>
-            <td><?= $row['periodo_pago'] ?> días</td>
             <td class="acciones">
-                <button class="btn btn-editar" type="button" onclick="abrirModalEditar(<?= $row['id'] ?>, '<?= htmlspecialchars($row['proveedor']) ?>', '<?= htmlspecialchars($row['direccion']) ?>', '<?= htmlspecialchars($row['telefono']) ?>', '<?= htmlspecialchars($row['correo']) ?>', <?= $row['periodo_pago'] ?>)">
+                <button class="btn btn-editar" type="button" onclick="abrirModalEditar(<?= $row['id'] ?>, '<?= htmlspecialchars($row['proveedor']) ?>', '<?= htmlspecialchars($row['direccion']) ?>', '<?= htmlspecialchars($row['telefono']) ?>', '<?= htmlspecialchars($row['correo']) ?>')">
                 <i class="fas fa-edit"></i>Editar
                 </button>
                 <form action="" method="POST" style="display:inline;" onsubmit="return confirm('¿Estás seguro de eliminar este proveedor?');">
@@ -220,11 +218,6 @@ $result = mysqli_query($conexion, $query);
           <input type="email" id="editCorreo" name="correo"  style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
         </div>
         
-        <div style="margin-bottom: 15px;">
-          <label for="editPeriodoPago">Periodo de Pago (días):</label>
-          <input type="number" id="editPeriodoPago" name="periodo_pago"  style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-        </div>
-        
         <div style="text-align: right;">
           <button type="button" onclick="cerrarModalEditar()" style="padding: 8px 16px; margin-right: 10px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Cancelar</button>
           <button type="submit" style="padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Guardar</button>
@@ -234,13 +227,12 @@ $result = mysqli_query($conexion, $query);
   </div>
 
   <script>
-  function abrirModalEditar(id, proveedor, direccion, telefono, correo, periodoPago) {
+  function abrirModalEditar(id, proveedor, direccion, telefono, correo) {
     document.getElementById('editId').value = id;
     document.getElementById('editProveedor').value = proveedor;
     document.getElementById('editDireccion').value = direccion;
     document.getElementById('editTelefono').value = telefono;
     document.getElementById('editCorreo').value = correo;
-    document.getElementById('editPeriodoPago').value = periodoPago;
     document.getElementById('modalEditar').style.display = 'block';
   }
 
