@@ -1,0 +1,1 @@
+[Tue Oct 21 10:07:02.883298 2025] [php:warn] [pid 14900] [client 187.251.235.62:59685] PHP Warning:  Undefined array key "role" in /var/www/transimex/header_main_aside/finanzas.php on line 38
