@@ -25,6 +25,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql_pedido = "SELECT id FROM pedido WHERE ot = '$ot' AND descripcion = '$pedido' LIMIT 1";
     $result_pedido = $conexion->query($sql_pedido);
 
+    $sql_cliente = "SELECT cliente FROM ot WHERE ot = '$ot' LIMIT 1";
+    $result_cliente = $conexion->query($sql_cliente);
+    $cliente = '';;
+    if ($result_cliente->num_rows > 0) {
+        $row_cliente = $result_cliente->fetch_assoc();
+        $cliente = $row_cliente['cliente'];
+    }
+
     if ($result_pedido->num_rows > 0) {
         // Obtener el id del pedido
         $row_pedido = $result_pedido->fetch_assoc();
@@ -84,6 +92,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <p><strong>Monto:</strong> $" . number_format($monto, 2) . " $moneda</p>
                             <p><strong>Valor en Pesos:</strong> $" . number_format($valor_pesos, 2) . " MXN</p>
                             <p><strong>OT:</strong> $ot</p>
+                            <p><strong>Cliente:</strong> $cliente</p>
                             <p><strong>Pedido:</strong> $pedido</p>
                             <p><strong>Responsable:</strong> $responsable</p>
                             <p><strong>Observaciones:</strong> $observaciones</p>

@@ -95,6 +95,14 @@ try {
     // **PHPMailer** para enviar el correo
     require '../../vendor/autoload.php'; // Si instalaste PHPMailer con Composer
 
+    $cliente_sql="SELECT cliente FROM ot WHERE ot = ?";
+    $stmt_cliente = $conexion->prepare($cliente_sql);
+    $stmt_cliente->bind_param("s", $ot);
+    $stmt_cliente->execute();
+    $stmt_cliente->bind_result($cliente);
+    $stmt_cliente->fetch();
+    $stmt_cliente->close();
+
     $mail = new PHPMailer(true); // Instancia de PHPMailer
 
     try {
@@ -131,6 +139,7 @@ try {
           <p><strong>{$_SESSION['username']}</strong> ha registrado un nuevo pedido:</p>
           <p><strong>OT:</strong> $ot<br>
              <strong>Pedido:</strong> $pedido<br>
+             <strong>Cliente:</strong> $cliente<br>
              <strong>Fecha de Registro:</strong> " . date("Y-m-d H:i:s") . "</p>
           <table border='1' cellpadding='5' cellspacing='0'>
             <tr>

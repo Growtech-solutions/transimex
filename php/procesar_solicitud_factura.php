@@ -30,6 +30,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql_pedido = "SELECT id FROM pedido WHERE ot = '$ot' AND descripcion = '$pedido' LIMIT 1";
     $result_pedido = $conexion->query($sql_pedido);
 
+    $sql_cliente = "SELECT cliente FROM ot WHERE ot = '$ot' LIMIT 1";
+    $result_cliente = $conexion->query($sql_cliente);
+    $cliente = '';;
+    if ($result_cliente->num_rows > 0) {
+        $row_cliente = $result_cliente->fetch_assoc();
+        $cliente = $row_cliente['cliente'];
+    }
+
     if ($result_pedido->num_rows > 0) {
         // Obtener el id del pedido
         $row_pedido = $result_pedido->fetch_assoc();
@@ -70,6 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
                 $mensaje = "Se ha registrado una nueva solicitud de factura con los siguientes detalles:<br><br>" .
                            "OT: $ot<br>" .
+                           "Cliente: $cliente<br>" .
                            "Descripción: $descripcion<br>" .
                            "Responsable: $responsable<br>" .
                            "Pedido: $pedido<br>";
