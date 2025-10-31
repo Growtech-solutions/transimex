@@ -94,7 +94,7 @@
             <section class="area">
                 <a href="recursos_humanos.php?pestaña=reclutaminto&header_loc=<?php echo $header_loc; ?>" class="area__boton">Reclutamiento</a>
                 <div class="dropdown-content">
-                    <a href="recursos_humanos.php?pestaña=encargado&header_loc=<?php echo $header_loc; ?>">Contactos</a>
+                    <a href="recursos_humanos.php?pestaña=contacto&header_loc=<?php echo $header_loc; ?>">Contactos</a>
                     <a href="recursos_humanos.php?pestaña=reporte_semanal&header_loc=<?php echo $header_loc; ?>">Proceso candidatos</a>
                     <a href="recursos_humanos.php?pestaña=reporte_casos&header_loc=<?php echo $header_loc; ?>">Proceso capacitacion</a>
                 </div>
