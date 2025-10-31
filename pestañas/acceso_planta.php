@@ -1,5 +1,5 @@
 <?php
-// Variables de filtros
+// Variables de filtros Prueba actualizacion 
 $encargado = $_GET['encargado'] ?? '';
 $objeto = $_GET['objeto'] ?? '';
 $fecha_inicio = $_GET['fecha_inicio'] ?? '';
