@@ -1,204 +1,199 @@
-
-<head>
-    <title>Análisis de Facturas</title>
-</head>
-<body id="facturas_mensuales">
-   <?php
-// Obtener el mes actual
-$mes_actual = date('m');
-// Obtener el año actual
+<?php
 $anio_actual = date('Y');
+$anio_solicitud = isset($_GET['anio_solicitud']) ? (int)$_GET['anio_solicitud'] : $anio_actual - 3;
+$anio_solicitudfin = isset($_GET['anio_solicitudfin']) ? (int)$_GET['anio_solicitudfin'] : $anio_actual;
 
-// Obtener el rango de años (últimos 5 años por defecto)
-$anio_solicitud = isset($_GET['anio_solicitud']) ? $_GET['anio_solicitud'] : $anio_actual - 3;
-$anio_solicitudfin = isset($_GET['anio_solicitudfin']) ? $_GET['anio_solicitudfin'] : $anio_actual;
+$meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
-// Generar la consulta para obtener el valor de las facturas de todos los meses dentro del rango de años
-$sql = "SELECT YEAR(alta_sistema) as year, MONTH(alta_sistema) as month, SUM(valor_pesos) as total_valor_pesos 
-        FROM facturas 
-        WHERE YEAR(alta_sistema) BETWEEN '$anio_solicitud' AND '$anio_solicitudfin'
-        GROUP BY YEAR(alta_sistema), MONTH(alta_sistema)
-        ORDER BY YEAR(alta_sistema), MONTH(alta_sistema)";
-$result = $conexion->query($sql);
-
-// Crear un array para almacenar los valores de las facturas por cada mes y año
+// Preparar array vacío
 $facturas = [];
-$meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-
-// Inicializar el array de facturas con valores a cero para todos los meses de cada año
-for ($year = $anio_solicitud; $year <= $anio_solicitudfin; $year++) {
-    foreach ($meses as $key => $mes) {
-        $facturas[$year][$key + 1] = 0; // Asigna valor 0 para cada mes del año
-    }
+for ($y=$anio_solicitud;$y<=$anio_solicitudfin;$y++){
+    for ($m=1;$m<=12;$m++) $facturas[$y][$m] = 0;
 }
 
-// Rellenar el array con los datos de la consulta
-while ($row = $result->fetch_assoc()) {
-    $year = $row['year'];
-    $month = $row['month'];
-    $facturas[$year][$month] = $row['total_valor_pesos'];
+// Traer datos
+$sql = "SELECT YEAR(alta_sistema) AS year, MONTH(alta_sistema) AS month, SUM(valor_pesos) AS total 
+        FROM facturas 
+        WHERE YEAR(alta_sistema) BETWEEN ? AND ? 
+        GROUP BY YEAR(alta_sistema), MONTH(alta_sistema)";
+$stmt = $conexion->prepare($sql);
+$stmt->bind_param("ii",$anio_solicitud,$anio_solicitudfin);
+$stmt->execute();
+$res = $stmt->get_result();
+while($row = $res->fetch_assoc()){
+    $facturas[$row['year']][$row['month']] = (float)$row['total'];
 }
-
+$stmt->close();
 $conexion->close();
+
+// Preparar datos JS
+$datasets = [];
+$colores = [
+    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', 
+    '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0', '#FF6384'
+];
+
+$i=0;
+foreach($facturas as $y=>$mesesData){
+    $datasets[] = [
+        'label' => "$y",
+        'data' => array_values($mesesData),
+        'borderColor' => $colores[$i % count($colores)],
+        'backgroundColor' => $colores[$i % count($colores)] . '20',
+        'borderWidth' => 2,
+        'fill' => false,
+        'tension' => 0.1
+    ];
+    $i++;
+}
+
 ?>
 
-<!-- Formulario de selección del rango de años -->
-<div class="contenedor__servicios">
-    <h2 class="titulo">Análisis de Facturas por Mes</h2>
-    <form class="reporte_formulario" method="GET">
-        <label for="anio_solicitud">Desde Año:</label>
-        <input type="number" id="anio_solicitud" name="anio_solicitud" value="<?php echo htmlspecialchars($anio_solicitud, ENT_QUOTES); ?>" placeholder="Año inicio">
-        
-        <label for="anio_solicitudfin">Hasta Año:</label>
-        <input type="number" id="anio_solicitudfin" name="anio_solicitudfin" value="<?php echo htmlspecialchars($anio_solicitudfin, ENT_QUOTES); ?>">
-        <input type="hidden" name="pestaña" value="analisis_facturas_mensuales">
-            <input type="hidden" name="header_loc" value="<?php echo htmlspecialchars($header_loc, ENT_QUOTES); ?>">
-            
-        <input type="submit" value="Filtrar">
-    </form>
-    <canvas id="graficaFacturas"></canvas>
-</div>
-
-<!-- Gráfico con Chart.js -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Facturas Mensuales</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    .form-container {
+        margin: 20px 0;
+        padding: 15px;
+        background-color: #f5f5f5;
+        border-radius: 5px;
+        text-align: center;
+    }
+    .form-group {
+        display: inline-block;
+        margin-right: 15px;
+    }
+    .button-group {
+        margin: 20px 0;
+        text-align: center;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    input, button {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+    button {
+        background-color: #007cba;
+        color: white;
+        cursor: pointer;
+        margin: 0 5px;
+    }
+    button:hover {
+        background-color: #005a8b;
+    }
+    button.active {
+        background-color: #005a8b;
+    }
+</style>
+</head>
+<body>
+    <div>
+        <h2 style="text-align: center;">Análisis de Facturas por Mes</h2>
+        
+        <!-- Formulario de selección de fechas -->
+        <div class="form-container">
+            <form method="GET">
+                <div class="form-group">
+                    <label for="anio_solicitud">Año Inicial:</label>
+                    <input type="number" id="anio_solicitud" name="anio_solicitud" 
+                           value="<?php echo $anio_solicitud; ?>" 
+                           min="2000" max="<?php echo $anio_actual + 1; ?>">
+                </div>
+                <div class="form-group">
+                    <label for="anio_solicitudfin">Año Final:</label>
+                    <input type="number" id="anio_solicitudfin" name="anio_solicitudfin" 
+                           value="<?php echo $anio_solicitudfin; ?>" 
+                           min="2000" max="<?php echo $anio_actual + 1; ?>">
+                </div>
+                <input type="hidden" name="pestaña" value="analisis_facturas_mensuales">
+                <div class="form-group">
+                    <button type="submit">Actualizar Gráfica</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Botones para cambiar vista -->
+        <div class="button-group">
+            <button id="btnMensual" class="active" onclick="cambiarVista('mensual')">Facturas por Mes</button>
+            <button id="btnAcumulado" onclick="cambiarVista('acumulado')">Acumulado</button>
+        </div>
+
+        <canvas id="graficaFacturas" width="900" height="400"></canvas>
+    </div>
+
 <script>
-    var ctx = document.getElementById('graficaFacturas').getContext('2d');
+const ctx = document.getElementById('graficaFacturas').getContext('2d');
+const meses = <?php echo json_encode($meses); ?>;
+const datasetsOriginales = <?php echo json_encode($datasets); ?>;
 
-    // Crear etiquetas para todos los meses
-    var labels = <?php echo json_encode($meses); ?>;
-
-    var datasets = [];
-    var promedio = Array(labels.length).fill(0); // Array para almacenar los promedios mensuales
-    var contador = Array(labels.length).fill(0); // Contador para promediar
-    var acumulados = {}; // Objeto para acumular los valores anuales por mes
-    var promedioAcumulado = Array(labels.length).fill(0); // Inicializar promedio acumulado
-
-    <?php foreach ($facturas as $year => $data): ?>
-    var acumulado = 0; // Inicializar acumulado para cada año
-    var datosAcumulados = [];
-
-    datasets.push({
-        label: '<?php echo $year; ?>',
-        data: <?php echo json_encode(array_values($data)); ?>,
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 1,
-        yAxisID: 'y1' // Escala principal para valores por mes
+// Calcular datos acumulados
+const datasetsAcumulados = datasetsOriginales.map(dataset => {
+    const dataAcumulada = [];
+    let acumulado = 0;
+    dataset.data.forEach(valor => {
+        acumulado += valor;
+        dataAcumulada.push(acumulado);
     });
+    return {
+        ...dataset,
+        data: dataAcumulada
+    };
+});
 
-    // Sumar los valores al promedio y calcular el acumulado
-    <?php foreach ($data as $month => $value): ?>
-        promedio[<?php echo $month - 1; ?>] += <?php echo $value; ?>;
-        contador[<?php echo $month - 1; ?>]++;
-        acumulado += <?php echo $value; ?>;
-        datosAcumulados.push(acumulado);
-
-        // Sumar al promedio acumulado
-        promedioAcumulado[<?php echo $month - 1; ?>] += acumulado;
-    <?php endforeach; ?>
-
-    acumulados['<?php echo $year; ?>'] = datosAcumulados;
-
-    datasets.push({
-        label: 'Acumulado <?php echo $year; ?>',
-        data: datosAcumulados,
-        type: 'line',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        borderWidth: 2,
-        fill: false,
-        yAxisID: 'y2', // Escala secundaria para acumulados
-        tension: 0.4
-    });
-    <?php endforeach; ?>
-
-    // Calcular los promedios mensuales
-    promedio = promedio.map(function(total, index) {
-        return contador[index] > 0 ? total / contador[index] : 0;
-    });
-
-    // Calcular el promedio acumulado
-    promedioAcumulado = promedioAcumulado.map(function(total, index) {
-        return contador[index] > 0 ? total / Object.keys(acumulados).length : 0;
-    });
-
-    // Agregar el dataset del promedio mensual
-    datasets.push({
-        label: 'Promedio Mensual',
-        data: promedio,
-        type: 'line',
-        borderColor: 'rgba(255, 99, 132, 1)',
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderWidth: 2,
-        fill: false,
-        tension: 0.4,
-        yAxisID: 'y1' // Escala principal
-    });
-
-    // Agregar el dataset del promedio acumulado
-    datasets.push({
-        label: 'Promedio Acumulado',
-        data: promedioAcumulado,
-        type: 'line',
-        borderColor: 'rgba(153, 102, 255, 1)',
-        backgroundColor: 'rgba(153, 102, 255, 0.2)',
-        borderWidth: 2,
-        fill: false,
-        yAxisID: 'y2', // Escala secundaria
-        tension: 0.4
-    });
-
-    var graficaFacturas = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels, // Las etiquetas serán los meses
-            datasets: datasets // Cada dataset corresponde a un año, promedio y acumulado
-        },
-        options: {
-            scales: {
-                y1: {
-                    type: 'linear',
-                    position: 'left',
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(value);
-                        }
-                    }
-                },
-                y2: {
-                    type: 'linear',
-                    position: 'right',
-                    beginAtZero: true,
-                    grid: {
-                        drawOnChartArea: false // Evita líneas de cuadrícula redundantes
-                    },
-                    ticks: {
-                        callback: function(value) {
-                            return (value ).toLocaleString() ;
-                        }
+let grafica = new Chart(ctx, {
+    type: 'line',
+    data: { 
+        labels: meses, 
+        datasets: datasetsOriginales 
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: { 
+                beginAtZero: true,
+                ticks: {
+                    callback: function(value) {
+                        return new Intl.NumberFormat('es-AR').format(value);
                     }
                 }
-            },
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: function(tooltipItem) {
-                            var dataset = datasets[tooltipItem.datasetIndex];
-                            var value = tooltipItem.raw;
-                            if (dataset.yAxisID === 'y2') {
-                                return `${dataset.label}: ${(value).toLocaleString()}`;
-                            }
-                            return `${dataset.label}: ${new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(value)}`;
-                        }
+            }
+        },
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.dataset.label + ': $' + new Intl.NumberFormat('es-AR').format(context.parsed.y);
                     }
                 }
             }
         }
-    });
-</script>
+    }
+});
 
+function cambiarVista(tipo) {
+    // Actualizar botones activos
+    document.getElementById('btnMensual').classList.remove('active');
+    document.getElementById('btnAcumulado').classList.remove('active');
+    
+    if (tipo === 'mensual') {
+        document.getElementById('btnMensual').classList.add('active');
+        grafica.data.datasets = datasetsOriginales;
+    } else {
+        document.getElementById('btnAcumulado').classList.add('active');
+        grafica.data.datasets = datasetsAcumulados;
+    }
+    
+    grafica.update();
+}
+</script>
 </body>
 </html>
-
-
