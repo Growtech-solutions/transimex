@@ -23,10 +23,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $cliente = $_POST['cliente'];
     $planta = $_POST['planta'];
     $responsable = $_POST['responsable'];
+    $cot = $_POST['cot'];
 
     // Preparar la consulta SQL para insertar los datos en la tabla ot
-    $sql = "INSERT INTO ot (descripcion, cliente, fecha_alta, planta, responsable) 
-            VALUES ('$descripcion', '$cliente', NOW(), '$planta', '$responsable')";  // Utilizamos NOW() para la fecha
+    $sql = "INSERT INTO ot (descripcion, cliente, fecha_alta, planta, responsable, cotizacion) 
+            VALUES ('$descripcion', '$cliente', NOW(), '$planta', '$responsable', '$cot')";  // Utilizamos NOW() para la fecha
 
     // Ejecutar la consulta SQL
     if ($conexion->query($sql) === TRUE) {
@@ -70,6 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                   <p><strong>OT:</strong> $ot<br>
                      <strong>Nombre del Proyecto:</strong> $descripcion<br>
                      <strong>Cliente:</strong> $cliente $planta<br>
+                     <strong>Valor de Cotización:</strong> $cot<br>
                      <strong>Responsable:</strong> $responsable<br>
                      <strong>Fecha de Registro:</strong> " . date("Y-m-d H:i:s") . "</p>
                 </body>

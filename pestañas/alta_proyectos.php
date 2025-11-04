@@ -27,7 +27,10 @@ $header_loc = htmlspecialchars($_GET['header_loc']);
     grid-column: 3/5;
 }
 .entrada:nth-child(5) {
-    grid-column: 1/5;
+    grid-column: 1/3;
+}
+.entrada:nth-child(6) {
+    grid-column: 3/5;
 }
 .altadeproyecto__boton__enviar {
     grid-column: 4;
@@ -59,6 +62,8 @@ $header_loc = htmlspecialchars($_GET['header_loc']);
                 $selectDatos->obtenerOpciones('listas', 'planta', 'planta', 'entrada'); 
                 $selectDatos->obtenerOpciones('listas', 'responsables', 'responsable', 'entrada'); 
             ?>
+
+            <input class="entrada" type="number" id="cot" name="cot" placeholder="valor de cotización" step="0.01" required>
 
             <input type="hidden" name="header_loc" value="<?php echo $header_loc; ?>">
 
