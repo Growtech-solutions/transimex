@@ -199,16 +199,16 @@ $pestaña= $_GET['pestaña'];
             }
 
             $sql_ot = "SELECT * FROM (
-    SELECT ot.*, 
-           (SELECT IFNULL(SUM(valor_pesos), 0) FROM pedido WHERE pedido.ot = ot.ot) AS pedidos, 
-           (SELECT IFNULL(SUM(facturas.valor_pesos), 0)
-               FROM facturas 
-               LEFT JOIN pedido ON facturas.id_pedido = pedido.id 
-               WHERE pedido.ot = ot.ot
-           ) AS facturas
-    FROM ot
-) AS subconsulta
-WHERE 1=1";
+                SELECT ot.*, 
+                    (SELECT IFNULL(SUM(valor_pesos), 0) FROM pedido WHERE pedido.ot = ot.ot) AS pedidos, 
+                    (SELECT IFNULL(SUM(facturas.valor_pesos), 0)
+                        FROM facturas 
+                        LEFT JOIN pedido ON facturas.id_pedido = pedido.id 
+                        WHERE pedido.ot = ot.ot
+                    ) AS facturas
+                FROM ot
+            ) AS subconsulta
+            WHERE 1=1";
              
             // Verificar si se enviaron los datos del formulario
             if (isset($_GET['ot'])) {
@@ -417,8 +417,9 @@ WHERE 1=1";
                         echo "<td>" . $fila_ot['cliente'] . "</td>";
                         echo "<td>" . $fila_ot['descripcion'] . "</td>";
                         echo "<td>" . $fila_ot['responsable'] . "</td>";
-                        echo "<td> Pedidos $" . $total_pedidos_ot . "</td>";
-                        echo "<td> Gastos $" . $total_compras_ot + $costo_mano_de_obra . "</td>";
+                        echo "<td><i> Cotizacion $" . number_format($fila_ot['cotizacion'], 2) . "</i></td>";
+                        echo "<td> Pedidos $" . number_format($total_pedidos_ot, 2) . "</td>";
+                        echo "<td> Gastos $" . number_format($total_compras_ot + $costo_mano_de_obra, 2) . "</td>";
                         echo "<td>". number_format($porcentaje_facturado, 2)."%</td>";
                         echo "<td>";
                             echo "<select
