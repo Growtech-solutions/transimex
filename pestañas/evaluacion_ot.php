@@ -191,14 +191,155 @@
                     echo "<div class='header'>";
                         echo "<img class='logo_ot' src='../img/logo.png' alt='Logo'>";
                         echo "<h2 class='text-color'> " . ucwords($row["descripcion"]) . "</h2>";
-                        echo "<h2 class='text-color'>" . htmlspecialchars($row["ot"]) . "</h2>";
+                        // Botón para abrir el modal
+                        echo "<h2 class='text-color'>";
+                        echo "<a href='#' id='editOtBtn' style='text-decoration:none;color:inherit;display:flex;align-items:center;justify-content:center;gap:10px;' title='Editar OT'>";
+                        echo htmlspecialchars($row["ot"]);
+                        echo "<span style='font-size:0.7em;opacity:0.7;'>✏️</span>";
+                        echo "</a>";
+                        echo "</h2>";
+
+                        // Modal HTML mejorado
+                        echo '
+                        <div id="editOtModal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100%;height:100%;overflow:auto;background:rgba(0,0,0,0.5);backdrop-filter:blur(5px);">
+                            <div style="background:#fff;margin:5% auto;padding:0;border-radius:15px;max-width:600px;box-shadow:0 10px 30px rgba(0,0,0,0.3);position:relative;animation:modalSlideIn 0.3s ease-out;">
+                                <!-- Header del modal -->
+                                <div style="background:#1d143e;color:#fff;padding:20px;border-radius:15px 15px 0 0;position:relative;">
+                                    <h3 style="margin:0;font-size:22px;">Editar OT: ' . htmlspecialchars($row["ot"]) . '</h3>
+                                    <span id="closeModal" style="position:absolute;top:15px;right:20px;font-size:28px;cursor:pointer;color:#fff;opacity:0.7;transition:opacity 0.3s;">&times;</span>
+                                </div>
+                                
+                                <!-- Contenido del modal -->
+                                <div style="padding:25px;">
+                                    <form method="POST" action="">
+                                        <input type="hidden" name="edit_ot" value="1">
+                                        <input type="hidden" name="ot" value="' . htmlspecialchars($row["ot"]) . '">
+                                        
+                                        <div style="margin-bottom:20px;">
+                                            <label for="descripcion" style="display:block;margin-bottom:8px;font-weight:bold;color:#333;">Descripción:</label>
+                                            <textarea id="descripcion" name="descripcion" rows="3" style="width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;resize:vertical;transition:border-color 0.3s;box-sizing:border-box;" placeholder="Ingrese la descripción de la OT">' . htmlspecialchars($row["descripcion"]) . '</textarea>
+                                        </div>
+                                        
+                                        <div style="margin-bottom:20px;">
+                                            <label for="planta" style="display:block;margin-bottom:8px;font-weight:bold;color:#333;">Planta:</label>';
+                                            $selectDatosExistentes->obtenerOpcionesExistentes('listas', 'planta', 'planta', 'form-control', $row["planta"]);
+                        echo '          </div>
+                                        
+                                        <div style="margin-bottom:20px;">
+                                            <label for="cliente" style="display:block;margin-bottom:8px;font-weight:bold;color:#333;">Cliente:</label>';
+                                            $selectDatosExistentes->obtenerOpcionesExistentes('cliente', 'razon_social', 'cliente', 'form-control', $row["cliente"]);
+                        echo '          </div>
+                                        
+                                        <div style="margin-bottom:20px;">
+                                            <label for="responsable" style="display:block;margin-bottom:8px;font-weight:bold;color:#333;">Responsable:</label>';
+                                            $selectDatosExistentes->obtenerOpcionesExistentes('listas', 'responsables', 'responsable', 'form-control', $row["responsable"]);
+                        echo '          </div>
+                                        
+                                        <div style="margin-bottom:25px;">
+                                            <label for="cotizacion" style="display:block;margin-bottom:8px;font-weight:bold;color:#333;">Cotización:</label>
+                                            <input type="number" id="cotizacion" name="cotizacion" step="0.01" value="' . htmlspecialchars($row["cotizacion"] ?? 0.00) . '" style="width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;transition:border-color 0.3s;box-sizing:border-box;" placeholder="0.00">
+                                        </div>
+                                        
+                                        <div style="display:flex;gap:10px;justify-content:flex-end;">
+                                            <button type="button" id="cancelBtn" style="background:#6c757d;color:#fff;padding:12px 25px;border:none;border-radius:8px;cursor:pointer;font-size:14px;transition:background-color 0.3s;">Cancelar</button>
+                                            <button type="submit" style="background:#1d143e;color:#fff;padding:12px 25px;border:none;border-radius:8px;cursor:pointer;font-size:14px;transition:background-color 0.3s;">Guardar Cambios</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>';
+
+                        // CSS para animaciones y estilos mejorados
+                        echo '
+                        <style>
+                            @keyframes modalSlideIn {
+                                from { transform: translateY(-50px); opacity: 0; }
+                                to { transform: translateY(0); opacity: 1; }
+                            }
+                            
+                            #editOtModal input:focus, 
+                            #editOtModal textarea:focus,
+                            #editOtModal select:focus {
+                                border-color: #1d143e !important;
+                                outline: none;
+                                box-shadow: 0 0 0 3px rgba(29, 20, 62, 0.1);
+                            }
+                            
+                            #editOtModal button:hover {
+                                transform: translateY(-1px);
+                                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                            }
+                            
+                            #closeModal:hover {
+                                opacity: 1 !important;
+                                transform: rotate(90deg);
+                            }
+                            
+                            .form-control {
+                                width: 100% !important;
+                                padding: 12px !important;
+                                border: 2px solid #e0e0e0 !important;
+                                border-radius: 8px !important;
+                                font-size: 14px !important;
+                                transition: border-color 0.3s !important;
+                                box-sizing: border-box !important;
+                            }
+                        </style>';
+
+                        // JavaScript mejorado
+                        echo '
+                        <script>
+                            document.getElementById("editOtBtn").onclick = function(e) {
+                                e.preventDefault();
+                                document.getElementById("editOtModal").style.display = "block";
+                                document.body.style.overflow = "hidden";
+                            };
+                            
+                            function closeModal() {
+                                document.getElementById("editOtModal").style.display = "none";
+                                document.body.style.overflow = "auto";
+                            }
+                            
+                            document.getElementById("closeModal").onclick = closeModal;
+                            document.getElementById("cancelBtn").onclick = closeModal;
+                            
+                            window.onclick = function(event) {
+                                var modal = document.getElementById("editOtModal");
+                                if (event.target == modal) {
+                                    closeModal();
+                                }
+                            };
+                            
+                            // Cerrar modal con tecla ESC
+                            document.addEventListener("keydown", function(event) {
+                                if (event.key === "Escape") {
+                                    closeModal();
+                                }
+                            });
+                        </script>';
+
+                        // Procesar edición si se envió el formulario
+                        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_ot']) && $_POST['edit_ot'] == '1') {
+                            $ot_edit = $conexion->real_escape_string($_POST['ot']);
+                            $desc_edit = $conexion->real_escape_string($_POST['descripcion']);
+                            $planta_edit = $conexion->real_escape_string($_POST['planta']);
+                            $cliente_edit = $conexion->real_escape_string($_POST['cliente']);
+                            $resp_edit = $conexion->real_escape_string($_POST['responsable']);
+                            $cotizacion_edit = $conexion->real_escape_string($_POST['cotizacion'] ?? '0.00');
+                            
+                            $update_sql = "UPDATE ot SET descripcion='$desc_edit', planta='$planta_edit', cliente='$cliente_edit', responsable='$resp_edit', cotizacion='$cotizacion_edit' WHERE ot='$ot_edit'";
+                            
+                            if ($conexion->query($update_sql)) {
+                                echo "<script>setTimeout(() => window.location.href=window.location.href, 1500);</script>";
+                            } 
+                        }
                     echo "</div>";
                     echo "<div class='linea-gris'></div>";
 
                     echo "<div class='detalles'>";
                         echo "<p><strong>Cliente:</strong> " . $row["cliente"] . "</p>";
                         echo "<p><strong>Alta:</strong> " . $row["fecha_alta"] . "</p>";
-                        echo "<p><strong>Descripción:</strong> " . $row["descripcion"] . "</p>";
+                        echo "<p><strong>Cotizacion:</strong> " . $row["cotizacion"] . "</p>";
                         echo "<p><strong>Responsable:</strong> " . $row["responsable"] . "</p>";
                     echo "</div>";
                     echo "<div class='linea-gris'></div>";
