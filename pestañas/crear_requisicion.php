@@ -121,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['seleccionado'])) {
                         $mail->Host = 'smtp.gmail.com'; // Dirección del servidor SMTP
                         $mail->SMTPAuth = true;
                         $mail->Username = 'rafael@growtech-solutions.com.mx'; // Tu correo electrónico
-                        $mail->Password = 'hnju vixi pstb zfcx'; // Tu contraseña
+                        $mail->Password = 'qlld nvlm amig hgab'; // Tu contraseña
                         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
                         $mail->Port = 465;
 
