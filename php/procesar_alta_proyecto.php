@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $mail->Host = 'smtp.gmail.com'; // Servidor SMTP de Google
             $mail->SMTPAuth = true;
             $mail->Username = 'rafael@growtech-solutions.com.mx'; // Alias o dirección principal
-            $mail->Password = 'hnju vixi pstb zfcx'; // Clave de aplicación generada
+            $mail->Password = 'qlld nvlm amig hgab'; // Clave de aplicación generada
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port = 465;
 
